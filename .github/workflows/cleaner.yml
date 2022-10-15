@@ -1,0 +1,37 @@
+name: Cleaner
+
+on:
+  schedule:
+    - cron:  '6 */3 * * *'
+  workflow_dispatch:
+
+env:
+  GitHubMail: "84674445+Zypernia@users.noreply.github.com"
+  GitHubName: "Zypernia"
+
+jobs:
+  Cleaner:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set Git Configs & Secrets
+        run: |
+          git config --global user.email ${GitHubMail}
+          git config --global user.name ${GitHubName}
+      - name: "Delete old workflow runs"
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          delete_workflow_pattern: "cleaner.yml"
+          retain_days: 0
+          keep_minimum_runs: 0
+      - name: Clean repo
+        run: |
+          git clone "https://github.com/${GITHUB_REPOSITORY}" clean || exit 1
+          cd clean
+          rm -rf .git
+          git init
+          git add .
+          git commit -am "Initial commit by Zypernia [skip ci]"
+          git remote add origin https://github.com/${GITHUB_REPOSITORY}
+          git push -q "https://${{ secrets.GH_TOK }}@github.com/${GITHUB_REPOSITORY}" -f HEAD:main || exit 1
