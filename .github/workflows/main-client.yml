@@ -37,7 +37,7 @@ jobs:
           git config --global credential.helper store
           echo "https://${{ secrets.GH_TOK }}@github.com" > ~/.git-credentials
       - name: "Setup Python 3"
-        uses: actions/setup-python@4.3.0
+        uses: actions/setup-python@v4.3.0
         with:
           python-version: '3.9.*'
 
